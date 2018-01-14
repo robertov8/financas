@@ -3,27 +3,16 @@ package com.example.financask.model
 import java.math.BigDecimal
 
 class Resumo(private val transacoes: List<Transacao>) {
-    fun receita() : BigDecimal {
-        val somaDeReceita = transacoes
-                .filter { transacao -> transacao.tipo == Tipo.RECEITA }
-                .sumByDouble { transacao -> transacao.valor.toDouble() }
 
-        return BigDecimal(somaDeReceita)
-    }
+    val receita get() = somaTipo(Tipo.RECEITA)
+    val despesa get() = somaTipo(Tipo.DESPESA)
+    val total get() : BigDecimal = receita.subtract(despesa)
 
-    fun despesa() : BigDecimal {
-        var totalDespesa = BigDecimal.ZERO
+    private fun somaTipo(tipo: Tipo): BigDecimal {
+        val somaDeTipo = transacoes
+                .filter { it.tipo == tipo }
+                .sumByDouble { it.valor.toDouble() }
 
-        for (transacao in transacoes) {
-            if (transacao.tipo == Tipo.DESPESA) {
-                totalDespesa = totalDespesa.plus(transacao.valor)
-            }
-        }
-
-        return totalDespesa
-    }
-
-    fun total() : BigDecimal {
-        return receita().subtract(despesa())
+        return BigDecimal(somaDeTipo)
     }
 }

@@ -16,8 +16,6 @@ import com.example.financask.model.Tipo
 import com.example.financask.model.Transacao
 import kotlinx.android.synthetic.main.form_transacao.view.*
 import java.math.BigDecimal
-import java.math.MathContext
-import java.text.SimpleDateFormat
 import java.util.*
 
 class AdicionaTransacaoDialog(private val viewGroup: ViewGroup,
@@ -25,16 +23,22 @@ class AdicionaTransacaoDialog(private val viewGroup: ViewGroup,
 
     private val viewCriada = criaLayout()
 
-    fun configuraDialog(transacaoDelegate: TransacaoDelegate) {
+    fun configuraDialog(tipo: Tipo, transacaoDelegate: TransacaoDelegate) {
         configuraCampoData()
-        configuraCampoCategoria()
-        configuraFormulario(transacaoDelegate)
+        configuraCampoCategoria(tipo)
+        configuraFormulario(tipo, transacaoDelegate)
     }
 
-    private fun configuraFormulario(transacaoDelegate: TransacaoDelegate) {
+    private fun configuraFormulario(tipo: Tipo, transacaoDelegate: TransacaoDelegate) {
+        val titulo = if (tipo == Tipo.RECEITA) {
+            R.string.adiciona_receita
+        } else {
+            R.string.adiciona_despesa
+        }
+
         AlertDialog
                 .Builder(context)
-                .setTitle(R.string.adiciona_receita)
+                .setTitle(titulo)
                 .setView(viewCriada)
                 .setPositiveButton("Adicionar", { _, _ ->
                     val valorDialog = viewCriada.form_transacao_valor.text.toString()
@@ -43,7 +47,7 @@ class AdicionaTransacaoDialog(private val viewGroup: ViewGroup,
 
                     var valor = converteCampoValor(valorDialog)
 
-                    val transacaoCriada = Transacao(valor, categoriaDialog, Tipo.RECEITA, dataDialog.converteParaCalendar())
+                    val transacaoCriada = Transacao(valor, categoriaDialog, tipo, dataDialog.converteParaCalendar())
 
                     transacaoDelegate.delegate(transacaoCriada)
                 })
@@ -60,11 +64,18 @@ class AdicionaTransacaoDialog(private val viewGroup: ViewGroup,
         }
     }
 
-    private fun configuraCampoCategoria() {
+    private fun configuraCampoCategoria(tipo: Tipo) {
+
+        val categorias = if (tipo == Tipo.RECEITA) {
+            R.array.categorias_de_receita
+        } else {
+            R.array.categorias_de_despesa
+        }
+
         val adapter = ArrayAdapter
                 .createFromResource(
                         context,
-                        R.array.categorias_de_receita,
+                        categorias,
                         android.R.layout.simple_spinner_dropdown_item
                 )
 

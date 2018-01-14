@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.example.financask.R
+import com.example.financask.delegate.TransacaoDelegate
 import com.example.financask.extension.converteParaCalendar
 import com.example.financask.extension.formataParaBrasileiro
 import com.example.financask.model.Tipo
@@ -24,14 +25,13 @@ class AdicionaTransacaoDialog(private val viewGroup: ViewGroup,
 
     private val viewCriada = criaLayout()
 
-    private fun configuraDialog() {
-
+    fun configuraDialog(transacaoDelegate: TransacaoDelegate) {
         configuraCampoData()
         configuraCampoCategoria()
-        configuraFormulario()
+        configuraFormulario(transacaoDelegate)
     }
 
-    private fun configuraFormulario() {
+    private fun configuraFormulario(transacaoDelegate: TransacaoDelegate) {
         AlertDialog
                 .Builder(context)
                 .setTitle(R.string.adiciona_receita)
@@ -45,8 +45,7 @@ class AdicionaTransacaoDialog(private val viewGroup: ViewGroup,
 
                     val transacaoCriada = Transacao(valor, categoriaDialog, Tipo.RECEITA, dataDialog.converteParaCalendar())
 
-                    atualizaTransacoes(transacaoCriada)
-                    lista_transacoes_adiciona_menu.close(true)
+                    transacaoDelegate.delegate(transacaoCriada)
                 })
                 .setNegativeButton("Cancelar", null)
                 .show()

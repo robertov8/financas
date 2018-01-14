@@ -3,6 +3,7 @@ package com.example.financask.ui.activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
@@ -20,6 +21,7 @@ import com.example.financask.ui.adapter.ListaTransacoesAdapter
 import kotlinx.android.synthetic.main.activity_lista_transacoes.*
 import kotlinx.android.synthetic.main.form_transacao.view.*
 import java.math.BigDecimal
+import java.text.SimpleDateFormat
 import java.util.*
 
 class ListaTransacoesActivity : AppCompatActivity() {
@@ -70,7 +72,25 @@ class ListaTransacoesActivity : AppCompatActivity() {
                     .Builder(this)
                     .setTitle(R.string.adiciona_receita)
                     .setView(inflateDialog)
-                    .setPositiveButton("Adicionar", null)
+                    .setPositiveButton("Adicionar", { dialogInterface, i ->
+                        val valorDialog = inflateDialog.form_transacao_valor.text.toString()
+                        val dataDialog = inflateDialog.form_transacao_data.text.toString()
+                        val categoriaDialog = inflateDialog.form_transacao_categoria.selectedItem.toString()
+
+                        val formatoBrasileiro = SimpleDateFormat("dd/MM/yyyy")
+                        val dataConvertida: Date = formatoBrasileiro.parse(dataDialog)
+                        val dataCalendar = Calendar.getInstance()
+                        dataCalendar.time = dataConvertida
+
+                        val transacaoCriada = Transacao(BigDecimal(valorDialog), categoriaDialog, Tipo.RECEITA, dataCalendar)
+
+                        Toast.makeText(this,
+                                "${transacaoCriada.valor} - " +
+                                "${transacaoCriada.categoria} - " +
+                                "${transacaoCriada.data.formataParaBrasileiro()} - " +
+                                "${transacaoCriada.tipo}",
+                                Toast.LENGTH_LONG).show()
+                    })
                     .setNegativeButton("Cancelar", null)
                     .show()
         }

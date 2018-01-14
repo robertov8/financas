@@ -2,6 +2,8 @@ package com.example.financask.ui.activity
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
+import android.widget.Toast
 import com.example.financask.R
 import com.example.financask.model.Tipo
 import com.example.financask.model.Transacao
@@ -20,6 +22,10 @@ class ListaTransacoesActivity : AppCompatActivity() {
 
         configuraResumo(transacoes)
         configuraLista(transacoes)
+
+        lista_transacoes_adiciona_receita.setOnClickListener {
+            Toast.makeText(this, "receita", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun configuraResumo(transacoes: List<Transacao>) {

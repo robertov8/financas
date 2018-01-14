@@ -22,28 +22,27 @@ class AdicionaTransacaoDialog(private val viewGroup: ViewGroup,
                               private val context: Context) {
 
     private val viewCriada = criaLayout()
+    private val campoValor = viewCriada.form_transacao_valor
+    private val campoCategoria = viewCriada.form_transacao_categoria
+    private val campoData = viewCriada.form_transacao_data
 
-    fun configuraDialog(tipo: Tipo, transacaoDelegate: TransacaoDelegate) {
+    fun chama(tipo: Tipo, transacaoDelegate: TransacaoDelegate) {
         configuraCampoData()
         configuraCampoCategoria(tipo)
         configuraFormulario(tipo, transacaoDelegate)
     }
 
     private fun configuraFormulario(tipo: Tipo, transacaoDelegate: TransacaoDelegate) {
-        val titulo = if (tipo == Tipo.RECEITA) {
-            R.string.adiciona_receita
-        } else {
-            R.string.adiciona_despesa
-        }
+        val titulo = tituloTipo(tipo)
 
         AlertDialog
                 .Builder(context)
                 .setTitle(titulo)
                 .setView(viewCriada)
                 .setPositiveButton("Adicionar", { _, _ ->
-                    val valorDialog = viewCriada.form_transacao_valor.text.toString()
-                    val dataDialog = viewCriada.form_transacao_data.text.toString()
-                    val categoriaDialog = viewCriada.form_transacao_categoria.selectedItem.toString()
+                    val valorDialog = campoValor.text.toString()
+                    val dataDialog = campoData.text.toString()
+                    val categoriaDialog = campoCategoria.selectedItem.toString()
 
                     var valor = converteCampoValor(valorDialog)
 
@@ -53,6 +52,14 @@ class AdicionaTransacaoDialog(private val viewGroup: ViewGroup,
                 })
                 .setNegativeButton("Cancelar", null)
                 .show()
+    }
+
+    private fun tituloTipo(tipo: Tipo): Int {
+        return if (tipo == Tipo.RECEITA) {
+            R.string.adiciona_receita
+        } else {
+            R.string.adiciona_despesa
+        }
     }
 
     private fun converteCampoValor(valorDialog: String): BigDecimal {
@@ -66,11 +73,7 @@ class AdicionaTransacaoDialog(private val viewGroup: ViewGroup,
 
     private fun configuraCampoCategoria(tipo: Tipo) {
 
-        val categorias = if (tipo == Tipo.RECEITA) {
-            R.array.categorias_de_receita
-        } else {
-            R.array.categorias_de_despesa
-        }
+        val categorias = categoriaTipo(tipo)
 
         val adapter = ArrayAdapter
                 .createFromResource(
@@ -79,7 +82,15 @@ class AdicionaTransacaoDialog(private val viewGroup: ViewGroup,
                         android.R.layout.simple_spinner_dropdown_item
                 )
 
-        viewCriada.form_transacao_categoria.adapter = adapter
+        campoCategoria.adapter = adapter
+    }
+
+    private fun categoriaTipo(tipo: Tipo): Int {
+        return if (tipo == Tipo.RECEITA) {
+            R.array.categorias_de_receita
+        } else {
+            R.array.categorias_de_despesa
+        }
     }
 
     private fun configuraCampoData() {
@@ -89,13 +100,12 @@ class AdicionaTransacaoDialog(private val viewGroup: ViewGroup,
         val mes = hoje.get(Calendar.MONTH)
         val dia = hoje.get(Calendar.DAY_OF_MONTH)
 
-        viewCriada.form_transacao_data.setText(hoje.formataParaBrasileiro())
-        viewCriada.form_transacao_data.setOnClickListener {
-            DatePickerDialog(context,
-                    DatePickerDialog.OnDateSetListener { _, ano, mes, dia ->
+        campoData.setText(hoje.formataParaBrasileiro())
+        campoData.setOnClickListener {
+            DatePickerDialog(context, { _, ano, mes, dia ->
                         val dataSelecionada = Calendar.getInstance()
                         dataSelecionada.set(ano, mes, dia)
-                        viewCriada.form_transacao_data.setText(dataSelecionada.formataParaBrasileiro())
+                        campoData.setText(dataSelecionada.formataParaBrasileiro())
                     }, ano, mes, dia)
                     .show()
         }

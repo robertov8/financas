@@ -10,38 +10,47 @@ import com.example.financask.model.Transacao
 import kotlinx.android.synthetic.main.resumo_card.view.*
 import java.math.BigDecimal
 
-class ResumoView(private val context: Context,
+class ResumoView(context: Context,
                  private val view: View,
                  transacoes: List<Transacao>) {
 
     private val resumo: Resumo = Resumo(transacoes)
+    private val corReceita = ContextCompat.getColor(context, R.color.receita)
+    private val corDespesa = ContextCompat.getColor(context, R.color.despesa)
 
     fun adicionaReceita() {
         val totalReceita = resumo.receita()
-        val color = ContextCompat.getColor(context, R.color.receita)
 
-        view.resumo_card_receita.text = totalReceita.formataParaBrasileiro()
-        view.resumo_card_receita.setTextColor(color)
+        with(view.resumo_card_receita) {
+            text = totalReceita.formataParaBrasileiro()
+            setTextColor(corReceita)
+        }
     }
 
     fun adicionaDespesa() {
         val totalDespesa = resumo.despesa()
-        val color = ContextCompat.getColor(context, R.color.despesa)
 
-        view.resumo_card_despesa.text = totalDespesa.formataParaBrasileiro()
-        view.resumo_card_despesa.setTextColor(color)
+        with(view.resumo_card_despesa) {
+            text = totalDespesa.formataParaBrasileiro()
+            setTextColor(corDespesa)
+        }
     }
 
     fun adicionaTotal() {
         val total = resumo.total()
+        val color = corTotal(total)
 
-        val color = if (total >= BigDecimal.ZERO) {
-            ContextCompat.getColor(context, R.color.receita)
-        } else {
-            ContextCompat.getColor(context, R.color.despesa)
+        with(view.resumo_card_total) {
+            text = total.formataParaBrasileiro()
+            setTextColor(color)
         }
+    }
 
-        view.resumo_card_total.text = total.formataParaBrasileiro()
-        view.resumo_card_total.setTextColor(color)
+    private fun corTotal(total: BigDecimal): Int {
+        return if (total >= BigDecimal.ZERO) {
+            corReceita
+        } else {
+            corDespesa
+        }
     }
 }

@@ -40,7 +40,7 @@ class ListaTransacoesActivity : AppCompatActivity() {
                 Transacao(BigDecimal(20.5), "Almoço de final de semana", Tipo.DESPESA),
                 Transacao(BigDecimal(20.5), "Comida", Tipo.DESPESA),
                 Transacao(BigDecimal(100), "Economia", Tipo.RECEITA),
-                Transacao(valor = BigDecimal(700.0), tipo = Tipo.DESPESA),
+                Transacao(valor = BigDecimal(200.0), tipo = Tipo.DESPESA),
                 Transacao(BigDecimal(500.0), "Prêmio", Tipo.RECEITA)
         )
     }
